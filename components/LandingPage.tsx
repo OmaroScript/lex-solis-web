@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -8,37 +9,47 @@ import {
   ShieldCheck,
   Gavel,
   ArrowUpRight,
-  CheckCircle2,
   MessageSquare,
   Phone,
   Mail,
+  MapPin,
   UploadCloud,
   Users,
   ChevronRight,
 } from "lucide-react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaWhatsapp,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
+import JsonLd from "@/components/JsonLd";
+import { site } from "@/lib/site";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Utility for Tailwind class merging */
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-const whatsappLink =
-  "https://wa.me/525564374441?text=Hola,%20quiero%20agendar%20una%20consulta%20legal";
-
-const facebookLink =
-  "https://www.facebook.com/people/Lex-Solis-Jur%C3%ADdico/100078541428232/?locale=es_LA";
-const instagramLink = "https://www.instagram.com/lexsolisjuridico/";
-const linkedinLink = "";
+const testimonialReviewsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LegalService",
+  name: site.name,
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "5",
+    reviewCount: "2",
+  },
+  review: [
+    {
+      "@type": "Review",
+      reviewRating: { "@type": "Rating", ratingValue: "5" },
+      author: { "@type": "Person", name: "Lic. Ricardo Mendoza" },
+      reviewBody:
+        "La capacidad técnica y el rigor procesal de Lex Solis fueron determinantes. Encontraron una salida jurídica donde otros expertos solo veían obstáculos insuperables.",
+    },
+    {
+      "@type": "Review",
+      reviewRating: { "@type": "Rating", ratingValue: "5" },
+      author: { "@type": "Person", name: "Elena Santillán V." },
+      reviewBody:
+        "Su discreción es tan impecable como su estrategia. Sentí que mi reputación y mi futuro estaban en manos seguras desde el momento de la primera consulta privada.",
+    },
+  ],
+};
 
 export default function App() {
   const mainRef = useRef<HTMLDivElement>(null);
@@ -161,55 +172,14 @@ export default function App() {
       className="bg-charcoal text-white min-h-screen selection:bg-gold-500/20"
       ref={mainRef}
     >
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 flex items-center justify-between px-8 py-6 border-b border-white/5 backdrop-blur-xl bg-charcoal/40">
-        <div className="flex items-center gap-2 cursor-pointer group">
-          <div className="w-8 h-8 flex items-center justify-center bg-gold-500 rounded-sm">
-            <Scale className="text-charcoal w-5 h-5" />
-          </div>
-          <span className="font-serif text-xl tracking-wide font-light">
-            LEX <span className="text-gold-400">SOLIS</span>
-          </span>
-        </div>
-
-        <div className="hidden lg:flex items-center gap-12 text-[10px] tracking-[0.2em] font-medium uppercase text-white/40">
-          <a href="#about" className="hover:text-gold-400 transition-colors">
-            Nosotros
-          </a>
-          <a
-            href="#specialties"
-            className="hover:text-gold-400 transition-colors"
-          >
-            Servicios
-          </a>
-          <a href="#impacto" className="hover:text-gold-400 transition-colors">
-            Impacto
-          </a>
-          <a
-            href="#testimonios"
-            className="hover:text-gold-400 transition-colors"
-          >
-            Testimonios
-          </a>
-        </div>
-
-        <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-2 text-[10px] tracking-[0.2em] font-bold uppercase bg-gold-500 text-charcoal px-8 py-3 rounded-sm hover:bg-gold-400 transition-all"
-        >
-          <FaWhatsapp className="w-4 h-4" />
-          Consulta Legal
-        </a>
-      </nav>
+      <SiteHeader variant="home" />
 
       {/* Hero Section */}
       <section className="hero-section relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop"
-            alt="Balanza de la Justicia"
+            alt="Balanza de la justicia, símbolo de la defensa penal en Lex Solis Jurídico"
             className="hero-image w-full h-full object-cover opacity-20 scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
@@ -219,12 +189,15 @@ export default function App() {
           <span className="inline-block px-4 py-1 mb-8 border border-gold-500/30 text-gold-400 font-sans text-xs tracking-[0.3em] uppercase">
             Protegemos tu libertad
           </span>
-          <h1 className="font-serif text-7xl md:text-9xl leading-[0.85] tracking-tighter mb-10">
+          <h1 className="font-serif text-7xl md:text-9xl leading-[0.85] tracking-tighter mb-6">
             Defensa Penal <br />
             <span className="italic text-gold-500 underline decoration-gold-500/20 underline-offset-8">
               Sofisticada.
             </span>
           </h1>
+          <p className="text-gold-400 font-sans text-sm md:text-base tracking-wide font-light mb-8">
+            Abogado penalista en Chimalhuacán y Ciudad de México
+          </p>
           <p className="max-w-xl text-lg text-white/50 leading-relaxed font-light mb-12">
             Realizando una labor contundente, estratégica y confidencial. Nos
             anticipamos a las fiscalías mediante rigor técnico y las
@@ -297,7 +270,7 @@ export default function App() {
                 <img
                   src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop"
                   className="w-full h-full object-cover"
-                  alt="Oficina moderna"
+                  alt="Despacho de abogados Lex Solis Jurídico en Chimalhuacán, Estado de México"
                 />
               </div>
               <div className="absolute -bottom-10 -left-10 hidden md:block w-72 bg-charcoal p-12 text-white shadow-2xl">
@@ -340,18 +313,21 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 reveal-item">
             <SpecialtyCard
               icon={<Scale className="w-8 h-8" />}
-              title="Juicios Orales"
+              title="Abogado para Juicios Orales"
               desc="Representación magistral en audiencias iniciales, intermedias y de juicio oral. Interrogatorios y contrainterrogatorios letales."
+              href="/abogado-juicios-orales"
             />
             <SpecialtyCard
               icon={<ShieldCheck className="w-8 h-8" />}
-              title="Defensa Estratégica"
+              title="Defensa Penal ante Fiscalías"
               desc="Auditoría legal y planeación táctica ante fiscalías para desvanecer imputaciones desde las primeras etapas de investigación."
+              href="/abogado-penalista-cdmx"
             />
             <SpecialtyCard
               icon={<Users className="w-8 h-8" />}
-              title="Asesoría a Víctimas"
+              title="Asesoría Legal a Víctimas de Delitos"
               desc="Atención especializada y búsqueda implacable de la verdad y la justicia para garantizar la reparación integral del daño."
+              href="/asesoria-victimas-delitos"
             />
           </div>
         </div>
@@ -384,19 +360,19 @@ export default function App() {
               </div>
               <div className="w-20 h-px bg-charcoal/20 mx-auto mb-6"></div>
               <p className="text-[11px] uppercase tracking-widest font-black">
-                Carpetas Analizadas
+                Carpetas de Investigación Analizadas
               </p>
             </div>
             <div className="reveal-item">
               <div
                 className="font-serif text-8xl mb-4 stat-number"
-                data-suffix="/7"
+                data-suffix=" hrs"
               >
                 24
               </div>
               <div className="w-20 h-px bg-charcoal/20 mx-auto mb-6"></div>
               <p className="text-[11px] uppercase tracking-widest font-black">
-                Disponibilidad de urgencia
+                Atención de Urgencia Todos los Días
               </p>
             </div>
             <div className="reveal-item">
@@ -408,7 +384,7 @@ export default function App() {
               </div>
               <div className="w-20 h-px bg-charcoal/20 mx-auto mb-6"></div>
               <p className="text-[11px] uppercase tracking-widest font-black">
-                Confidencialidad absoluta
+                Confidencialidad Garantizada
               </p>
             </div>
           </div>
@@ -420,6 +396,7 @@ export default function App() {
         id="testimonios"
         className="py-32 bg-white text-charcoal reveal-section"
       >
+        <JsonLd data={testimonialReviewsJsonLd} />
         <div className="container mx-auto px-8">
           <div className="text-center mb-20 reveal-item">
             <span className="text-gold-500 font-sans text-xs tracking-[0.3em] uppercase block mb-4">
@@ -483,6 +460,22 @@ export default function App() {
                     <p className="text-lg font-serif">+52 55 6437 4441</p>
                   </div>
                 </div>
+                <Link
+                  href="/defensa-penal-chimalhuacan"
+                  className="flex items-start gap-6 group"
+                >
+                  <div className="w-12 h-12 bg-gold-500/10 rounded-sm flex items-center justify-center border border-gold-500/20 group-hover:border-gold-500/50 transition-colors">
+                    <MapPin className="w-5 h-5 text-gold-500" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold block mb-1">
+                      Sede en Chimalhuacán
+                    </span>
+                    <p className="text-lg font-serif text-white group-hover:text-gold-400 transition-colors">
+                      Ver despacho local en Chimalhuacán
+                    </p>
+                  </div>
+                </Link>
               </div>
             </div>
 
@@ -570,78 +563,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20 border-t border-white/5 bg-charcoal">
-        <div className="container mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-16 items-start">
-            <div className="md:col-span-2 space-y-8">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 flex items-center justify-center bg-gold-500 rounded-sm">
-                  <Scale className="text-charcoal w-5 h-5" />
-                </div>
-                <span className="font-serif text-2xl tracking-wide font-light uppercase">
-                  LEX <span className="text-gold-400">SOLIS</span>
-                </span>
-              </div>
-              <p className="text-white/30 text-sm leading-relaxed max-w-sm font-light italic">
-                "Donde el rigor del derecho se encuentra con la sofistación de
-                la defensa estratégica."
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <h5 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold-500">
-                Legal
-              </h5>
-              <div className="flex flex-col gap-4 text-xs text-white/40 font-light">
-                <a href="#" className="hover:text-gold-500 transition-colors">
-                  Protocolo de Privacidad
-                </a>
-                <a href="#" className="hover:text-gold-500 transition-colors">
-                  Términos del Servicio
-                </a>
-                <a href="#" className="hover:text-gold-500 transition-colors">
-                  Ética y Cumplimiento
-                </a>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h5 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gold-500">
-                Sede Central
-              </h5>
-              <div className="text-xs text-white/40 font-light leading-relaxed">
-                Manantial de Las Flores,
-                <br />
-                Villa Xochitenco, Chimalhuacán, Méx.,
-                <br />
-                CP 56360
-              </div>
-            </div>
-          </div>
-          <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 text-[9px] uppercase tracking-widest text-white/20 font-bold">
-            <span>
-              © 2026 LEX SOLIS JURÍDICO. TODOS LOS DERECHOS RESERVADOS.
-            </span>
-            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-              <div className="flex items-center gap-4">
-                <SocialIcon href={facebookLink} label="Facebook">
-                  <FaFacebookF className="w-5 h-5" />
-                </SocialIcon>
-                <SocialIcon href={instagramLink} label="Instagram">
-                  <FaInstagram className="w-5 h-5" />
-                </SocialIcon>
-                <SocialIcon href={whatsappLink} label="WhatsApp">
-                  <FaWhatsapp className="w-5 h-5" />
-                </SocialIcon>
-                <SocialIcon href={linkedinLink} label="LinkedIn">
-                  <FaLinkedinIn className="w-5 h-5" />
-                </SocialIcon>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
@@ -650,13 +572,15 @@ function SpecialtyCard({
   icon,
   title,
   desc,
+  href,
 }: {
   icon: React.ReactNode;
   title: string;
   desc: string;
+  href?: string;
 }) {
-  return (
-    <div className="p-12 bg-charcoal hover:bg-navy-900 group transition-all duration-700 cursor-pointer overflow-hidden relative">
+  const content = (
+    <>
       <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all -translate-y-4 group-hover:translate-y-0 text-gold-500">
         <ArrowUpRight className="w-6 h-6" />
       </div>
@@ -670,6 +594,23 @@ function SpecialtyCard({
         {desc}
       </p>
       <div className="h-px w-0 bg-gold-500 transition-all duration-700 group-hover:w-full"></div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="p-12 bg-charcoal hover:bg-navy-900 group transition-all duration-700 cursor-pointer overflow-hidden relative block"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="p-12 bg-charcoal hover:bg-navy-900 group transition-all duration-700 cursor-pointer overflow-hidden relative">
+      {content}
     </div>
   );
 }
@@ -688,7 +629,7 @@ function TestimonialCard({
       <div className="absolute top-0 right-0 w-48 h-48 bg-gold-500/5 -translate-y-1/2 translate-x-1/2 rounded-full blur-3xl group-hover:bg-gold-500/10 transition-colors" />
       <MessageSquare className="w-12 h-12 text-gold-500/10 mb-10" />
       <blockquote className="font-serif text-2xl italic leading-relaxed mb-12 text-white/80">
-        "{quote}"
+        &ldquo;{quote}&rdquo;
       </blockquote>
       <div className="flex items-center gap-6">
         <div className="w-16 h-px bg-gold-500" />
@@ -734,30 +675,5 @@ function InputField({
         placeholder={placeholder}
       />
     </div>
-  );
-}
-
-function SocialIcon({
-  href,
-  label,
-  children,
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={label}
-      className={cn(
-        "w-14 h-14 rounded-full border border-gold-500/30 flex items-center justify-center",
-        "text-white/90 hover:text-gold-400 hover:border-gold-400 transition-all",
-      )}
-    >
-      {children}
-    </a>
   );
 }
