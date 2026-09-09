@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { site } from "@/lib/site";
+import { privacyVersion } from "@/lib/privacy";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
+
+    if (formData.get("privacyConsent") !== privacyVersion) {
+      return NextResponse.json(
+        { ok: false, message: "Debe leer y aceptar el aviso de privacidad vigente." },
+        { status: 400 }
+      );
+    }
 
     const name = String(formData.get("name") || "");
     const email = String(formData.get("email") || "");
@@ -49,30 +57,35 @@ export async function POST(request: Request) {
       });
     }
 
-    await resend.emails.send({
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { error } = await resend.emails.send({
       from: process.env.FROM_EMAIL!,
-      // to: ["omaroscript.dev@gmail.com"],
-      to: ["juridico@lexsolis.com"],
+      to: [site.email],
       replyTo: email,
       subject: `Nuevo contacto legal: ${subject}`,
-      html: `
-        <h2>Nuevo mensaje desde Lex Solis</h2>
-        <p><strong>Nombre:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Asunto:</strong> ${subject}</p>
-        <p><strong>Mensaje:</strong></p>
-        <p>${message}</p>
-        ${attachments.length > 0 ? "<p><strong>Incluye evidencia adjunta.</strong></p>" : ""}
+      text: `
+        Consentimiento de privacidad: versión ${privacyVersion}
+        Recibido: ${new Date().toISOString()}
+        Nuevo mensaje desde Lex Solis
+        Nombre: ${name}
+        Email: ${email}
+        Asunto: ${subject}
+        Mensaje:
+        ${message}
+        ${attachments.length > 0 ? "Incluye evidencia adjunta." : ""}
       `,
       attachments,
     });
+
+    if (error) {
+      throw new Error("El proveedor no pudo enviar el mensaje.");
+    }
 
     return NextResponse.json({
       ok: true,
       message: "Mensaje enviado correctamente.",
     });
-  } catch (error) {
-    console.error(error);
+  } catch {
 
     return NextResponse.json(
       { ok: false, message: "No se pudo enviar el mensaje." },

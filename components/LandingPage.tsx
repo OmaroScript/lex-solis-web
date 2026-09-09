@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import PrivacySummary from "@/components/PrivacySummary";
 import JsonLd from "@/components/JsonLd";
 import { site } from "@/lib/site";
 
@@ -446,7 +447,7 @@ export default function App() {
                     <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold block mb-1">
                       Escríbanos
                     </span>
-                    <p className="text-lg font-serif">juridico@lexsolis.com</p>
+                    <p className="text-lg font-serif">ale1806unam@hotmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-6">
@@ -509,6 +510,7 @@ export default function App() {
 
                   <textarea
                     name="message"
+                    aria-describedby="contact-data-guidance"
                     required
                     className="w-full bg-transparent border-b border-white/10 py-4 focus:outline-none focus:border-gold-500 transition-colors resize-none placeholder:text-white/5 h-24"
                     placeholder="Describa brevemente la situación..."
@@ -544,6 +546,8 @@ export default function App() {
   />
 </label>
 
+                <PrivacySummary />
+
                 {formMessage && (
                   <p className="text-xs text-white/50 font-light">
                     {formMessage}
@@ -555,7 +559,7 @@ export default function App() {
                   disabled={isSending}
                   className="w-full bg-gold-500 text-charcoal py-5 font-bold text-xs tracking-[0.4em] uppercase hover:bg-gold-400 transition-all rounded-sm shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSending ? "Enviando..." : "Enviar Mensaje Encriptado"}
+                  {isSending ? "Enviando..." : "Enviar mensaje"}
                 </button>
               </form>
             </div>

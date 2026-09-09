@@ -55,9 +55,9 @@ export default function SiteFooter() {
               Legal
             </h5>
             <div className="flex flex-col gap-4 text-xs text-white/40 font-light">
-              <a href="#" className="hover:text-gold-500 transition-colors">
-                Protocolo de Privacidad
-              </a>
+              <Link href="/aviso-de-privacidad" className="hover:text-gold-500 transition-colors">
+                Aviso de privacidad
+              </Link>
               <a href="#" className="hover:text-gold-500 transition-colors">
                 Términos del Servicio
               </a>

@@ -4,7 +4,7 @@ export const site = {
   name: "Lex Solis Jurídico",
   lawyer: "Lic. Alejandro Martínez Arrieta",
   url: siteUrl,
-  email: "juridico@lexsolis.com",
+  email: "ale1806unam@hotmail.com",
   phoneDisplay: "+52 55 6437 4441",
   phoneE164: "+525564374441",
   whatsappLink:
