@@ -17,15 +17,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const name = String(formData.get("name") || "");
-    const email = String(formData.get("email") || "");
-    const subject = String(formData.get("subject") || "");
-    const message = String(formData.get("message") || "");
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const subject = String(formData.get("subject") || "").trim();
+    const message = String(formData.get("message") || "").trim();
     const evidence = formData.get("evidence");
 
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { ok: false, message: "Faltan campos obligatorios." },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { ok: false, message: "Ingrese un correo electrónico válido." },
         { status: 400 }
       );
     }

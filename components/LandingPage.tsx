@@ -55,6 +55,7 @@ const testimonialReviewsJsonLd = {
 export default function App() {
   const mainRef = useRef<HTMLDivElement>(null);
   const [isSending, setIsSending] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const [formMessage, setFormMessage] = useState("");
   const [selectedFileName, setSelectedFileName] = useState("");
 
@@ -135,10 +136,25 @@ export default function App() {
     return () => ctx.revert();
   }, []);
 
+  const validateForm = (form: HTMLFormElement) => {
+    const data = new FormData(form);
+    const hasRequiredText = ["name", "email", "subject", "message"].every(
+      (field) => String(data.get(field) || "").trim().length > 0,
+    );
+    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(data.get("email") || "").trim());
+    return hasRequiredText && hasValidEmail && Array.from(form.elements).every((element) => {
+      if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+        return element.validity.valid;
+      }
+      return true;
+    });
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
     const form = event.currentTarget;
+    if (isSending || !validateForm(form)) return;
     
     setIsSending(true);
     setFormMessage("");
@@ -159,9 +175,10 @@ export default function App() {
       }
 
       form.reset();
+      setIsFormValid(false);
       setSelectedFileName("");
       setFormMessage("Mensaje enviado correctamente. Te contactaremos pronto.");
-    } catch (error) {
+    } catch {
       setFormMessage("Ocurrió un error al enviar el mensaje.");
     } finally {
       setIsSending(false);
@@ -481,7 +498,12 @@ export default function App() {
             </div>
 
             <div className="bg-navy-900/30 p-12 border border-white/5 reveal-item">
-              <form className="space-y-8" onSubmit={handleSubmit}>
+              <form
+                className="space-y-8"
+                onSubmit={handleSubmit}
+                onInput={(event) => setIsFormValid(validateForm(event.currentTarget))}
+                onChange={(event) => setIsFormValid(validateForm(event.currentTarget))}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <InputField
                     label="Nombre"
@@ -554,9 +576,13 @@ export default function App() {
                   </p>
                 )}
 
+                <p id="contact-submit-help" className="text-sm text-white/70">
+                  Complete todos los campos obligatorios con un correo válido y acepte el aviso para habilitar el envío. El archivo adjunto es opcional.
+                </p>
                 <button
                   type="submit"
-                  disabled={isSending}
+                  disabled={isSending || !isFormValid}
+                  aria-describedby="contact-submit-help"
                   className="w-full bg-gold-500 text-charcoal py-5 font-bold text-xs tracking-[0.4em] uppercase hover:bg-gold-400 transition-all rounded-sm shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSending ? "Enviando..." : "Enviar mensaje"}
