@@ -170,7 +170,7 @@ export default function App() {
       const result = await response.json();
 
       if (!response.ok || !result.ok) {
-        setFormMessage("No se pudo enviar el mensaje. Intenta nuevamente.");
+        setFormMessage(result.message || "No se pudo enviar el mensaje. Intenta nuevamente.");
         return;
       }
 

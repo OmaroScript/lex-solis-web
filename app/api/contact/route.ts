@@ -64,9 +64,22 @@ export async function POST(request: Request) {
       });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const apiKey = process.env.RESEND_API_KEY?.trim();
+    const fromEmail = process.env.FROM_EMAIL?.trim();
+    if (!apiKey || !fromEmail) {
+      console.error("contact_email_configuration", {
+        missingApiKey: !apiKey,
+        missingFromEmail: !fromEmail,
+      });
+      return NextResponse.json(
+        { ok: false, message: "El formulario no está disponible por el momento. Contáctenos por correo o WhatsApp." },
+        { status: 503 },
+      );
+    }
+
+    const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL!,
+      from: fromEmail,
       to: [site.email],
       replyTo: email,
       subject: `Nuevo contacto legal: ${subject}`,
@@ -85,7 +98,23 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      throw new Error("El proveedor no pudo enviar el mensaje.");
+      // Classify the provider response without logging addresses, message content or keys.
+      const detail = error.message.toLowerCase();
+      const reason = detail.includes("testing emails") || detail.includes("resend.dev")
+        ? "testing_sender_restriction"
+        : detail.includes("domain") && (detail.includes("verif") || detail.includes("not found"))
+          ? "sender_domain_not_verified"
+          : detail.includes("api key")
+            ? "api_key_rejected"
+            : "provider_rejected";
+      console.error("contact_email_rejected", {
+        reason,
+        statusCode: error.statusCode,
+      });
+      return NextResponse.json(
+        { ok: false, message: "No se pudo enviar el mensaje. Intente más tarde o contáctenos por correo o WhatsApp." },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({
@@ -93,6 +122,7 @@ export async function POST(request: Request) {
       message: "Mensaje enviado correctamente.",
     });
   } catch {
+    console.error("contact_email_unexpected_failure");
 
     return NextResponse.json(
       { ok: false, message: "No se pudo enviar el mensaje." },
